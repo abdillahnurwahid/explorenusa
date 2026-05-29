@@ -3,12 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\SubscriberController;
 use Illuminate\Support\Facades\Http;
 
 Route::get('/places', [PlaceController::class, 'index']);
 Route::get('/favorites', [FavoriteController::class, 'index']);
 Route::post('/favorites', [FavoriteController::class, 'store']);
 Route::delete('/favorites/{id}', [FavoriteController::class, 'destroy']);
+Route::post('/subscribe', [SubscriberController::class, 'store']);
 
 Route::get('/geocode', function (Illuminate\Http\Request $request) {
     $q = $request->q;
