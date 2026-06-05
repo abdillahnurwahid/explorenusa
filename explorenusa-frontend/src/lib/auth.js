@@ -51,3 +51,57 @@ export function getUser() {
     const user = localStorage.getItem('user')
     return user ? JSON.parse(user) : null
 }
+
+// Ambil profil dari API
+export async function getProfile() {
+    const token = localStorage.getItem('token')
+    const res = await fetch(`${API_URL}/profile`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+    })
+    return res.json()
+}
+
+// Update nama & email
+export async function updateProfile(name, email) {
+    const token = localStorage.getItem('token')
+    const res = await fetch(`${API_URL}/profile/update`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name, email }),
+    })
+    return res.json()
+}
+
+// Upload avatar
+export async function updateAvatar(file) {
+    const token = localStorage.getItem('token')
+    const formData = new FormData()
+    formData.append('avatar', file)
+    const res = await fetch(`${API_URL}/profile/avatar`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData,
+    })
+    return res.json()
+}
+
+// Ganti password
+export async function updatePassword(currentPassword, newPassword, newPasswordConfirmation) {
+    const token = localStorage.getItem('token')
+    const res = await fetch(`${API_URL}/profile/password`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+            current_password: currentPassword,
+            new_password: newPassword,
+            new_password_confirmation: newPasswordConfirmation,
+        }),
+    })
+    return res.json()
+}

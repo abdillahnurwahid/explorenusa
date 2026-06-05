@@ -5,7 +5,8 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\SubscriberController;
-use App\Http\Controllers\Api\AuthController; // ← pindah ke atas
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ProfileController;
 
 // === PUBLIC ROUTES ===
 Route::get('/places', [PlaceController::class, 'index']);
@@ -18,6 +19,10 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
+    Route::get('/profile', [ProfileController::class, 'show']);
+    Route::put('/profile/update', [ProfileController::class, 'update']);
+    Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar']);
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword']);
 
     Route::get('/favorites', [FavoriteController::class, 'index']);
     Route::post('/favorites', [FavoriteController::class, 'store']);

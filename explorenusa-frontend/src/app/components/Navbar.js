@@ -106,7 +106,9 @@ export default function Navbar() {
           {/* Tombol Auth */}
           {loggedIn ? (
             <>
-              <span className="en-nb-user">👋 {user?.name}</span>
+              <Link href="/profile" className="en-nb-user" style={{ textDecoration: 'none' }}>
+                👋 {user?.name}
+              </Link>
               <button className="en-nb-btn-outline" onClick={handleLogout}>
                 Logout
               </button>
