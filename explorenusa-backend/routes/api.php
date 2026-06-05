@@ -1,17 +1,30 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\SubscriberController;
-use Illuminate\Support\Facades\Http;
+use App\Http\Controllers\Api\AuthController; // ← pindah ke atas
 
+// === PUBLIC ROUTES ===
 Route::get('/places', [PlaceController::class, 'index']);
-Route::get('/favorites', [FavoriteController::class, 'index']);
-Route::post('/favorites', [FavoriteController::class, 'store']);
-Route::delete('/favorites/{id}', [FavoriteController::class, 'destroy']);
 Route::post('/subscribe', [SubscriberController::class, 'store']);
 
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
+// === PROTECTED ROUTES ===
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [AuthController::class, 'me']);
+
+    Route::get('/favorites', [FavoriteController::class, 'index']);
+    Route::post('/favorites', [FavoriteController::class, 'store']);
+    Route::delete('/favorites/{id}', [FavoriteController::class, 'destroy']);
+});
+
+// === GEOCODE & ROUTE ===
 Route::get('/geocode', function (Illuminate\Http\Request $request) {
     $q = $request->q;
     $apiKey = config('services.geoapify.key');

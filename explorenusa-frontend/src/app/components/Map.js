@@ -121,16 +121,20 @@ export default function Map() {
     }
   }, []);
 
-  const fetchFavorites = async () => {
-    try {
-      const res = await fetch("http://localhost:8000/api/favorites");
-      const data = await res.json();
-      setFavorites(data || []);
-    } catch (err) {
-      console.error("FAVORITES ERROR:", err);
-    }
-  };
-
+const fetchFavorites = async () => {
+  const token = localStorage.getItem('token')
+  if (!token) return // ← guest skip, tidak fetch
+  try {
+    const res = await fetch("http://localhost:8000/api/favorites", {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    if (!res.ok) return
+    const data = await res.json()
+    setFavorites(data || [])
+  } catch (err) {
+    console.error("FAVORITES ERROR:", err)
+  }
+};
   const isFavorited = (place) => {
     const placeId = place.properties?.place_id ||
       place.geometry?.coordinates?.join(",") || "";
@@ -138,33 +142,44 @@ export default function Map() {
   };
 
   const handleToggleFavorite = async (place) => {
-    const placeId = place.properties?.place_id ||
-      place.geometry?.coordinates?.join(",") || "";
-    const name = place.properties?.name || "Tanpa Nama";
-    const lat = place.geometry?.coordinates?.[1];
-    const lon = place.geometry?.coordinates?.[0];
+  const token = localStorage.getItem('token')
+  if (!token) {
+    alert('Login dulu untuk menyimpan favorit!')
+    return
+  }
+  const placeId = place.properties?.place_id ||
+    place.geometry?.coordinates?.join(",") || ""
+  const name = place.properties?.name || "Tanpa Nama"
+  const lat = place.geometry?.coordinates?.[1]
+  const lon = place.geometry?.coordinates?.[0]
 
-    if (isFavorited(place)) {
-      try {
-        await fetch("http://localhost:8000/api/favorites/" + placeId, { method: "DELETE" });
-        setFavorites((prev) => prev.filter((f) => f.place_id !== placeId));
-      } catch (err) {
-        console.error("DELETE FAV ERROR:", err);
-      }
-    } else {
-      try {
-        const res = await fetch("http://localhost:8000/api/favorites", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ place_id: placeId, name, lat, lon }),
-        });
-        const data = await res.json();
-        setFavorites((prev) => [...prev, data]);
-      } catch (err) {
-        console.error("ADD FAV ERROR:", err);
-      }
+  if (isFavorited(place)) {
+    try {
+      await fetch("http://localhost:8000/api/favorites/" + placeId, {
+        method: "DELETE",
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      setFavorites((prev) => prev.filter((f) => f.place_id !== placeId))
+    } catch (err) {
+      console.error("DELETE FAV ERROR:", err)
     }
-  };
+  } else {
+    try {
+      const res = await fetch("http://localhost:8000/api/favorites", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ place_id: placeId, name, lat, lon }),
+      })
+      const data = await res.json()
+      setFavorites((prev) => [...prev, data])
+    } catch (err) {
+      console.error("ADD FAV ERROR:", err)
+    }
+  }
+};
 
   const handleGoToFavorite = (fav) => {
     const coords = [fav.lat, fav.lon];
