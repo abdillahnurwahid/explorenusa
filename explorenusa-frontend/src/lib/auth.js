@@ -45,7 +45,7 @@ export function isLoggedIn() {
     return !!localStorage.getItem('token')
 }
 
-// Ambil data user
+// Ambil data user dari localStorage
 export function getUser() {
     if (typeof window === 'undefined') return null
     const user = localStorage.getItem('user')
@@ -61,8 +61,8 @@ export async function getProfile() {
     return res.json()
 }
 
-// Update nama & email
-export async function updateProfile(name, email) {
+// Update nama, email, dan phone
+export async function updateProfile(name, email, phone) {
     const token = localStorage.getItem('token')
     const res = await fetch(`${API_URL}/profile/update`, {
         method: 'PUT',
@@ -70,7 +70,7 @@ export async function updateProfile(name, email) {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ name, email }),
+        body: JSON.stringify({ name, email, phone }),
     })
     return res.json()
 }

@@ -13,7 +13,7 @@ export default function ProfilePage() {
     const [loading, setLoading] = useState(true)
 
     // Form states
-    const [editForm, setEditForm] = useState({ name: '', email: '' })
+    const [editForm, setEditForm] = useState({ name: '', email: '', phone: '' })
     const [passForm, setPassForm] = useState({ current_password: '', new_password: '', new_password_confirmation: '' })
 
     // Feedback states
@@ -34,17 +34,22 @@ export default function ProfilePage() {
         setLoading(true)
         const data = await getProfile()
         setProfile(data)
-        setEditForm({ name: data.name || '', email: data.email || '' })
+        setEditForm({ name: data.name || '', email: data.email || '', phone: data.phone || '' })
         setLoading(false)
     }
 
     const handleEditSubmit = async (e) => {
         e.preventDefault()
         setEditLoading(true); setEditMsg({ type: '', text: '' })
-        const res = await updateProfile(editForm.name, editForm.email)
+        const res = await updateProfile(editForm.name, editForm.email, editForm.phone)
         if (res.message === 'Profil berhasil diperbarui') {
-            setProfile(prev => ({ ...prev, name: res.user.name, email: res.user.email }))
-            localStorage.setItem('user', JSON.stringify({ ...JSON.parse(localStorage.getItem('user')), name: res.user.name, email: res.user.email }))
+            setProfile(prev => ({ ...prev, name: res.user.name, email: res.user.email, phone: res.user.phone }))
+            localStorage.setItem('user', JSON.stringify({
+                ...JSON.parse(localStorage.getItem('user')),
+                name: res.user.name,
+                email: res.user.email,
+                phone: res.user.phone,
+            }))
             setEditMsg({ type: 'success', text: 'Profil berhasil diperbarui!' })
         } else {
             const errMsg = res.errors ? Object.values(res.errors).flat().join(', ') : res.message || 'Gagal memperbarui profil'
@@ -105,7 +110,8 @@ export default function ProfilePage() {
                 .pf-avatar-btn:hover { background: #333; }
                 .pf-avatar-loading { position: absolute; inset: 0; background: rgba(0,0,0,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; }
                 .pf-header-info h1 { font-size: 20px; font-weight: 800; color: #111; margin-bottom: 4px; }
-                .pf-header-info p { font-size: 13px; color: #999; }
+                .pf-header-info p { font-size: 13px; color: #999; margin: 0; }
+                .pf-header-info .pf-phone { font-size: 13px; color: #bbb; margin-top: 2px; }
                 .pf-card { background: #fff; border-radius: 16px; padding: 28px 32px; margin-bottom: 16px; border: 1px solid #eee; }
                 .pf-card-title { font-size: 15px; font-weight: 800; color: #111; margin-bottom: 20px; }
                 .pf-label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 6px; }
@@ -151,12 +157,13 @@ export default function ProfilePage() {
                         <div className="pf-header-info">
                             <h1>{profile?.name}</h1>
                             <p>{profile?.email}</p>
+                            {profile?.phone && <p className="pf-phone">📞 {profile.phone}</p>}
                         </div>
                     </div>
 
                     {avatarMsg.text && <div className={`pf-msg ${avatarMsg.type}`}>{avatarMsg.text}</div>}
 
-                    {/* Edit Nama & Email */}
+                    {/* Edit Nama, Email & Phone */}
                     <div className="pf-card">
                         <div className="pf-card-title">Edit Profil</div>
                         {editMsg.text && <div className={`pf-msg ${editMsg.type}`}>{editMsg.text}</div>}
@@ -169,6 +176,10 @@ export default function ProfilePage() {
                             <input className="pf-input" type="email" required
                                 value={editForm.email}
                                 onChange={e => setEditForm({ ...editForm, email: e.target.value })} />
+                            <label className="pf-label">Nomor HP</label>
+                            <input className="pf-input" type="tel" placeholder="08xxxxxxxxxx"
+                                value={editForm.phone}
+                                onChange={e => setEditForm({ ...editForm, phone: e.target.value })} />
                             <button className="pf-btn" type="submit" disabled={editLoading}>
                                 {editLoading ? 'Menyimpan...' : 'Simpan Perubahan'}
                             </button>

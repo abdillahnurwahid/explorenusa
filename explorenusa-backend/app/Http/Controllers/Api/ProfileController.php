@@ -19,6 +19,7 @@ class ProfileController extends Controller
             'id'         => $user->id,
             'name'       => $user->name,
             'email'      => $user->email,
+            'phone'      => $user->phone,
             'avatar_url' => $user->avatar_url
                 ? asset('storage/' . $user->avatar_url)
                 : null,
@@ -37,6 +38,7 @@ class ProfileController extends Controller
                 'required', 'email', 'max:255',
                 Rule::unique('users')->ignore($user->id),
             ],
+            'phone' => 'nullable|string|max:20',
         ]);
 
         $user->update($validated);
@@ -47,6 +49,7 @@ class ProfileController extends Controller
                 'id'         => $user->id,
                 'name'       => $user->name,
                 'email'      => $user->email,
+                'phone'      => $user->phone,
                 'avatar_url' => $user->avatar_url
                     ? asset('storage/' . $user->avatar_url)
                     : null,
