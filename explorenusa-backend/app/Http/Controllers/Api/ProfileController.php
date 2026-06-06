@@ -20,9 +20,8 @@ class ProfileController extends Controller
             'name' => $user->name,
             'email' => $user->email,
             'phone' => $user->phone,
-            'avatar_url' => $user->avatar_url
-                ? asset('storage/'.$user->avatar_url)
-                : null,
+            'avatar_url' => $user->avatar_url ? asset('storage/'.$user->avatar_url) : null,
+            'avatar' => $user->avatar_url ? asset('storage/'.$user->avatar_url) : null,
             'created_at' => $user->created_at,
         ]);
     }
@@ -84,6 +83,7 @@ class ProfileController extends Controller
         return response()->json([
             'message' => 'Foto profil berhasil diperbarui',
             'avatar_url' => asset('storage/'.$path),
+            'avatar'     => asset('storage/' . $path),
         ]);
     }
 
